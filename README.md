@@ -1,10 +1,13 @@
 This project is a simple implementation of Pong in Rust using the Ratatui library for the user interface.
-By default the left player is human and the right is the computer, but you can change that using the '-l' and '-r' options.
+By default the left player is human and the right is the computer, but you can change that using the `-l` and `-r` options.
+
+Enjoy playing Pong!
 
 ## Build and Run
 
-'cargo build -r'
-'./target/pong'
+`cargo build -r`
+
+`./target/pong`
 
 ## Controls
 
@@ -15,15 +18,13 @@ Use the following controls to play:
 
 ## FAQ
 
-- **Q** Why?
-  - **A** Because Pong is a classic.
-  - **A** Because I wanted to learn Rust and Ratatui.
+- Why?
+  - Because Pong is a classic.
+  - Because I wanted to learn Rust and Ratatui.
 
-- **Q** Can I contribute?
-  - **A** Sure? Feel free to fork the repository and submit pull requests.
+- Can I contribute?
+  - Sure? Feel free to fork the repository and submit pull requests.
 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-Enjoy playing Pong!
