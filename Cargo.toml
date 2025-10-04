@@ -1,0 +1,12 @@
+[package]
+name = "pong"
+version = "1.0.0"
+edition = "2024"
+authors = ["Adam Milner"]
+description = "Pong in the terminal."
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5.48", features = ["derive"] }
+rand = "0.9.2"
+ratatui = "0.29.0"
