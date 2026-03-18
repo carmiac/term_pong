@@ -1,10 +1,10 @@
 //! UI rendering: drawing the game field, ball, paddles, and score.
+use ratatui::Frame;
 use ratatui::style::{Color, Style};
 use ratatui::text::Line;
+use ratatui::widgets::Block;
 use ratatui::widgets::canvas;
 use ratatui::widgets::canvas::{Canvas, Circle, Context};
-use ratatui::widgets::Block;
-use ratatui::Frame;
 
 use crate::app::AppStyles;
 use crate::model::{Ball, Model, Paddle};

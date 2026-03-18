@@ -10,13 +10,13 @@ use std::{
 };
 use tca_ratatui::TcaTheme;
 
-use crate::model::{self, ai_input, Controls, Model};
+use crate::model::{self, Controls, Model, ai_input};
 
 use crate::ui::draw_ui;
 
 use ratatui::{
-    crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
     DefaultTerminal,
+    crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
 };
 
 #[derive(PartialEq, Debug, Clone, ValueEnum)]
