@@ -1,8 +1,9 @@
+//! Game model: ball, paddles, field, and simulation logic.
 use rand::Rng;
 
-use ratatui::style::Color;
-use ratatui::widgets::canvas;
-use ratatui::widgets::canvas::{Circle, Line};
+const BALL_SPEED: f64 = 0.15;
+const SPEED_INCREMENT: f64 = 1.1;
+const PADDLE_SPEED: f64 = 0.6;
 
 pub enum Controls {
     Stop,
@@ -11,7 +12,8 @@ pub enum Controls {
 }
 
 pub struct Ball {
-    pub circle: Circle,
+    pub x: f64,
+    pub y: f64,
     pub vx: f64,
     pub vy: f64,
 }
@@ -21,7 +23,6 @@ pub struct Paddle {
     pub x: f64,
     pub y: f64,
     pub vy: f64,
-    pub color: Color,
 }
 
 pub struct Field {
@@ -29,61 +30,44 @@ pub struct Field {
     pub y: f64,
 }
 
-pub trait Drawable {
+pub trait Tickable {
     fn tick(&mut self, field: &Field);
-    fn draw(&self, ctx: &mut canvas::Context);
 }
 
-impl Drawable for Ball {
+impl Tickable for Ball {
     fn tick(&mut self, field: &Field) {
-        self.circle.x += self.vx;
-
-        self.circle.y += self.vy;
-        if self.circle.y <= 0.0 {
+        self.x += self.vx;
+        self.y += self.vy;
+        if self.y <= 0.0 {
             self.vy = -self.vy;
-            self.circle.y = -self.circle.y;
-        } else if self.circle.y >= field.y {
+            self.y = -self.y;
+        } else if self.y >= field.y {
             self.vy = -self.vy;
-            self.circle.y = 2.0 * field.y - self.circle.y;
+            self.y = 2.0 * field.y - self.y;
         }
     }
-
-    fn draw(&self, ctx: &mut canvas::Context) {
-        ctx.draw(&self.circle);
-    }
 }
 
-pub trait Controlable {
+pub trait Controllable {
     fn tick(&mut self, field: &Field, input: &Controls);
-    fn draw(&self, ctx: &mut canvas::Context);
 }
 
-impl Controlable for Paddle {
+impl Controllable for Paddle {
     fn tick(&mut self, field: &Field, input: &Controls) {
         match input {
             Controls::Stop => {
                 self.vy = 0.0;
             }
             Controls::Down => {
-                self.vy = -2.0;
+                self.vy = -PADDLE_SPEED;
             }
             Controls::Up => {
-                self.vy = 2.0;
+                self.vy = PADDLE_SPEED;
             }
         }
 
         // Move, but not out of bounds.
         self.y = (self.y + self.vy).clamp(self.len / 2.0, field.y - self.len / 2.0);
-    }
-    fn draw(&self, ctx: &mut canvas::Context) {
-        let line = Line {
-            x1: self.x,
-            x2: self.x,
-            y1: self.y - self.len / 2.0,
-            y2: self.y + self.len / 2.0,
-            color: self.color,
-        };
-        ctx.draw(&line);
     }
 }
 pub struct Model {
@@ -102,28 +86,22 @@ impl Model {
     pub fn new(x: f64, y: f64) -> Self {
         Self {
             ball: Ball {
-                circle: Circle {
-                    x: x / 2.0,
-                    y: y / 2.0,
-                    radius: 0.5,
-                    color: Color::Yellow,
-                },
-                vx: 0.5,
-                vy: 0.5,
+                x: x / 2.0,
+                y: y / 2.0,
+                vx: BALL_SPEED,
+                vy: BALL_SPEED,
             },
             l_paddle: Paddle {
                 len: x / 25.0,
                 x: x / 12.0,
                 y: y / 2.0,
                 vy: 0.0,
-                color: Color::Blue,
             },
             r_paddle: Paddle {
                 len: x / 25.0,
                 x: x * 11.0 / 12.0,
                 y: y / 2.0,
                 vy: 0.0,
-                color: Color::Red,
             },
             l_score: 0,
             r_score: 0,
@@ -153,21 +131,21 @@ impl Model {
             &self.r_paddle
         };
 
-        if (self.ball.circle.x - paddle.x).abs() <= self.ball.vx.abs()
-            && self.ball.circle.y < (paddle.y + paddle.len / 2.0)
-            && self.ball.circle.y > (paddle.y - paddle.len / 2.0)
+        if (self.ball.x - paddle.x).abs() <= self.ball.vx.abs()
+            && self.ball.y < (paddle.y + paddle.len / 2.0)
+            && self.ball.y > (paddle.y - paddle.len / 2.0)
         {
             // Bounce and speed up a bit
-            self.ball.vx *= -1.05;
-            self.ball.vy *= 1.05;
+            self.ball.vx *= -SPEED_INCREMENT;
+            self.ball.vy *= SPEED_INCREMENT;
         }
     }
 
     fn score_check(&mut self) {
-        if self.ball.circle.x < 0.0 {
+        if self.ball.x < 0.0 {
             self.r_score += 1;
             self.reset_ball();
-        } else if self.ball.circle.x > self.field.x {
+        } else if self.ball.x > self.field.x {
             self.l_score += 1;
             self.reset_ball();
             self.ball.vx *= -1.0;
@@ -175,18 +153,20 @@ impl Model {
     }
 
     fn reset_ball(&mut self) {
-        self.ball.circle.x = self.field.x / 2.0;
-        self.ball.circle.y = self.field.y / 2.0;
-        self.ball.vx = self.rng.random_range(0.4..0.6);
-        self.ball.vy = self.rng.random_range(0.4..0.6);
+        self.ball.x = self.field.x / 2.0;
+        self.ball.y = self.field.y / 2.0;
+        self.ball.vx = self.rng.random_range(0.1..0.17);
+        self.ball.vy = self.rng.random_range(0.1..0.17);
     }
 
     pub fn resize(&mut self, x: f64, y: f64) {
         // Get the current positions as a fraction of the current size.
         let x_ratio = x / self.field.x;
         let y_ratio = y / self.field.y;
-        self.ball.circle.x *= x_ratio;
-        self.ball.circle.y *= y_ratio;
+        self.ball.x *= x_ratio;
+        self.ball.y *= y_ratio;
+        self.ball.vx *= x_ratio;
+        self.ball.vy *= y_ratio;
         self.l_paddle.x *= x_ratio;
         self.l_paddle.y *= y_ratio;
         self.l_paddle.len *= y_ratio;
@@ -199,9 +179,9 @@ impl Model {
 }
 
 pub fn ai_input(ball: &Ball, paddle: &Paddle) -> Controls {
-    if (ball.circle.y - paddle.y) > paddle.len / 3.0 {
+    if (ball.y - paddle.y) > paddle.len / 3.0 {
         return Controls::Up;
-    } else if (paddle.y - ball.circle.y) > paddle.len / 3.0 {
+    } else if (paddle.y - ball.y) > paddle.len / 3.0 {
         return Controls::Down;
     }
     Controls::Stop
