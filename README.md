@@ -21,15 +21,13 @@ pong uses the [TCA](https://github.com/carmiac/tca-themes) color theme system, s
 
 ## FAQ
 
-- **Q** Why?
-  - **A** Because Pong is a classic.
-  - **A** Because I wanted to learn Rust and Ratatui.
+- Why?
+  - Because Pong is a classic.
+  - Because I wanted to learn Rust and Ratatui.
 
-- **Q** Can I contribute?
-  - **A** Sure? Feel free to fork the repository and submit pull requests.
+- Can I contribute?
+  - Sure? Feel free to fork the repository and submit pull requests.
 
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
-
-Enjoy playing Pong!
