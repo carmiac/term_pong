@@ -7,6 +7,7 @@ use crate::app::{AppConfig, PlayerType};
 use clap::Parser;
 use ratatui::crossterm::event::PopKeyboardEnhancementFlags;
 use std::io::Result;
+use tca_ratatui::TcaTheme;
 
 mod app;
 mod model;
@@ -30,10 +31,15 @@ struct Args {
 fn main() -> Result<()> {
     // Parse arguments.
     let cli = Args::parse();
+    let theme = if let Some(theme) = cli.theme {
+        TcaTheme::from_name(&theme)
+    } else {
+        TcaTheme::default()
+    };
     let config = AppConfig {
         player_l: cli.left,
         player_r: cli.right,
-        theme: tca_ratatui::TcaTheme::new(cli.theme.as_deref()),
+        theme,
     };
 
     // setup terminal

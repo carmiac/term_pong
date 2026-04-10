@@ -13,4 +13,4 @@ categories = ["games", "command-line-utilities"]
 clap = { version = "4.6.0", features = ["derive"] }
 rand = "0.10.0"
 ratatui = "0.30.0"
-tca-ratatui = "0.3.0"
+tca-ratatui = "0.7.0"
