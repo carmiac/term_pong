@@ -1,5 +1,5 @@
 //! Game model: ball, paddles, field, and simulation logic.
-use rand::Rng;
+use rand::RngExt;
 
 const BALL_SPEED: f64 = 0.15;
 const SPEED_INCREMENT: f64 = 1.1;
