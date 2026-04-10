@@ -10,13 +10,13 @@ use std::{
 };
 use tca_ratatui::TcaTheme;
 
-use crate::model::{self, Controls, Model, ai_input};
+use crate::model::{self, ai_input, Controls, Model};
 
 use crate::ui::draw_ui;
 
 use ratatui::{
-    DefaultTerminal,
     crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind},
+    DefaultTerminal,
 };
 
 #[derive(PartialEq, Debug, Clone, ValueEnum)]
@@ -35,6 +35,7 @@ pub struct AppConfig {
 #[derive(Debug, Clone)]
 pub(crate) struct AppStyles {
     pub border: Style,
+    pub title: Style,
     pub score: Style,
     pub field: Style,
     pub ball: Style,
@@ -47,8 +48,10 @@ impl From<&TcaTheme> for AppStyles {
         AppStyles {
             border: Style::default()
                 .fg(value.ui.border_primary)
-                .bg(value.ui.bg_primary)
-                .bold(),
+                .bg(value.ui.bg_primary),
+            title: Style::default()
+                .fg(value.ui.fg_secondary)
+                .bg(value.ui.bg_primary),
             score: Style::default()
                 .fg(value.semantic.info)
                 .bg(value.ui.bg_primary)

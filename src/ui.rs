@@ -1,10 +1,10 @@
 //! UI rendering: drawing the game field, ball, paddles, and score.
-use ratatui::Frame;
 use ratatui::style::{Color, Style};
 use ratatui::text::Line;
-use ratatui::widgets::Block;
 use ratatui::widgets::canvas;
 use ratatui::widgets::canvas::{Canvas, Circle, Context};
+use ratatui::widgets::Block;
+use ratatui::Frame;
 
 use crate::app::AppStyles;
 use crate::model::{Ball, Model, Paddle};
@@ -38,7 +38,7 @@ impl Drawable for Paddle {
 }
 
 pub fn draw_ui(frame: &mut Frame, styles: &AppStyles, model: &Model) {
-    let title = Line::from(" PONG ").centered().style(styles.border);
+    let title = Line::from(" PONG ").centered().style(styles.title);
 
     let score = Line::from(format!(" {} : SCORE : {} ", model.l_score, model.r_score))
         .centered()
